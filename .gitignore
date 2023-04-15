@@ -1,3 +1,4 @@
+.env
 .idea
 clibuddy.egg-info
 **__pycache__**

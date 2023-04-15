@@ -3,13 +3,17 @@ import os
 import sys
 import importlib.util
 import subprocess
+from clibuddy.logger.log import setup_logger
 
 
 @click.command()
 @click.option("--explain", is_flag=True, help="Explain any errors that occurred when the wrapped tool ran")
 @click.option("--fix", is_flag=True, help="Attempt to fix any errors that occurred when the wrapped tool ran")
+@click.option("--debug", is_flag=True, help="Enable debug mode.")
 @click.argument("wrapped_command", nargs=-1)
-def main(explain, fix, wrapped_command):
+def main(explain, fix, debug, wrapped_command):
+    setup_logger(debug)
+
     if not explain and not fix:
         click.echo("Please provide at least one of --explain or --fix")
         sys.exit(1)
@@ -49,12 +53,12 @@ def main(explain, fix, wrapped_command):
     # Check if the wrapped command failed with an exit code > 0
     if returncode != 0:
         if explain:
-            explanation = tool_module.explain(stdout + stderr, returncode)
-            click.echo(explanation)
+            explanation = tool_module.explain(wrapped_command_str, stdout + stderr, returncode)
+            click.secho(explanation, fg='bright_yellow', bold=True)
 
         if fix:
-            patch = tool_module.fix(stdout + stderr, returncode)
-            click.echo(patch)
+            patch = tool_module.fix(wrapped_command_str, stdout + stderr, returncode)
+            click.secho(patch, fg='bright_magenta', bold=True)
 
     sys.exit(returncode)
 
