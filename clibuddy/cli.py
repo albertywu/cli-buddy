@@ -4,7 +4,10 @@ import sys
 import importlib.util
 import subprocess
 from clibuddy.logger.log import setup_logger
-
+from rich.live import Live
+from rich.text import Text
+from rich.panel import Panel
+from rich import box
 
 @click.command()
 @click.option("--explain", is_flag=True, help="Explain any errors that occurred when the wrapped tool ran")
@@ -27,8 +30,7 @@ def main(explain, fix, debug, wrapped_command):
     tool_file = os.path.join(tools_dir, f"{tool_name}.py")
 
     if not os.path.exists(tool_file):
-        click.echo(f"Tool not found: {tool_file}")
-        sys.exit(1)
+        tool_file = os.path.join(tools_dir, "default.py")
 
     spec = importlib.util.spec_from_file_location("tool_module", tool_file)
     tool_module = importlib.util.module_from_spec(spec)
@@ -53,14 +55,26 @@ def main(explain, fix, debug, wrapped_command):
     # Check if the wrapped command failed with an exit code > 0
     if returncode != 0:
         if explain:
-            explanation = tool_module.explain(wrapped_command_str, stdout + stderr, returncode)
-            click.secho(explanation, fg='bright_yellow', bold=True)
+            stream = tool_module.explain(wrapped_command_str, stdout + stderr, returncode)
+            stream_to_console(stream)
 
         if fix:
-            patch = tool_module.fix(wrapped_command_str, stdout + stderr, returncode)
-            click.secho(patch, fg='bright_magenta', bold=True)
+            stream = tool_module.fix(wrapped_command_str, stdout + stderr, returncode)
+            stream_to_console(stream)
 
     sys.exit(returncode)
+
+
+def stream_to_console(stream):
+    live_text = Text("", style="bold bright_cyan")
+    panel = Panel(live_text, box=box.ROUNDED, expand=False, padding=(1, 2))
+
+    with Live(panel) as panel:  # update 4 times a second to feel fluid
+        panel.console.rule("", style="cyan")
+        for chunk in stream:
+            nxt = chunk["choices"][0].get("delta", {}).get("content")
+            if nxt is not None:
+                live_text.append(nxt)
 
 
 if __name__ == "__main__":

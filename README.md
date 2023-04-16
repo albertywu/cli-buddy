@@ -1,4 +1,4 @@
-## cli-buddy
+## clibuddy
 
 Wrap your CLI's with an AI buddy that can explain and fix failures.
 

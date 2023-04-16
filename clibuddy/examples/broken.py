@@ -1,0 +1,3 @@
+import bubaloo
+
+print("hi")

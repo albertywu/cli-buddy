@@ -1,13 +1,16 @@
 import os
 from clibuddy.llm.gpt import GPT
 from clibuddy.logger.log import logger
+from openai.openai_response import OpenAIResponse
+from typing import Iterator
 
 api_key = os.getenv("OPENAI_API_KEY")
 gpt = GPT(api_key)
 
-def explain(command: str, log: str, exitcode: int) -> str:
+
+def explain(command: str, log: str, exitcode: int) -> Iterator[OpenAIResponse]:
     prompt = f"""
-I ran this node cli command in my terminal and got a non-zero exitcode {exitcode}:
+I ran this cli command in my terminal and got a non-zero exitcode {exitcode}:
 
 {command}
 
@@ -16,13 +19,12 @@ Please help explain what went wrong. Here is the full error log:
 {log}
     """
     logger.debug(prompt)
-    response = gpt.ask(prompt)
-    return response
+    return gpt.ask(prompt)
 
 
-def fix(command: str, log: str, exitcode: int) -> str:
+def fix(command: str, log: str, exitcode: int) -> Iterator[OpenAIResponse]:
     prompt = f"""
-I ran this node cli command in my terminal and got a non-zero exitcode {exitcode}:
+I ran this cli command in my terminal and got a non-zero exitcode {exitcode}:
 
 {command}
 
@@ -34,6 +36,5 @@ Just reply with the git patch file and nothing else.
 {log}
     """
     logger.debug(prompt)
-    response = gpt.ask(prompt)
-    return response
+    return gpt.ask(prompt)
 
