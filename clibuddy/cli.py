@@ -70,7 +70,7 @@ def stream_to_console(stream):
     panel = Panel(live_text, box=box.ROUNDED, expand=False, padding=(1, 2))
 
     with Live(panel) as panel:  # update 4 times a second to feel fluid
-        panel.console.rule("", style="cyan")
+        panel.console.rule("CliBuddy", style="cyan")
         for chunk in stream:
             nxt = chunk["choices"][0].get("delta", {}).get("content")
             if nxt is not None:
