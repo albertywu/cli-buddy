@@ -2,6 +2,7 @@
 
 A command-line OpenAI-enabled assistant that helps:
 - [x] explain errors
+- [ ] analyze stack traces (pass the stack trace file content through to the prompt)
 - [ ] include better examples
 - [ ] give credit to OpenAI; explain how this works, including prompt generation
 - [ ] fix bugs
