@@ -171,6 +171,3 @@ cb --fix --typescript -- <cmd> <...cmdArgs>
 ```
 cb --fix --typescript -- <cmd> <...cmdArgs>
 ```
-
-## Examples
-- [ ] TODO
